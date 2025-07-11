@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>株式投資情報 - LINEで最新市場動向を取得</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic UI', 'Meiryo UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .main-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .participant-counter {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 30px 0;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
+        }
+
+        .hero-description {
+            font-size: 1.4rem;
+            color: #34495e;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .primary-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .card-subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .card-content {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 184, 148, 0.4);
+        }
+
+        .disclaimer-text {
+            font-size: 0.95rem;
+            color: #95a5a6;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .subscription-section {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border-radius: 25px;
+            padding: 50px 40px;
+            text-align: center;
+            margin: 50px 0;
+            box-shadow: 0 20px 60px rgba(9, 132, 227, 0.3);
+        }
+
+        .subscription-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .subscription-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+
+        .subscription-description {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        .warning-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 5px solid #e74c3c;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .warning-title {
+            color: #e74c3c;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .warning-list {
+            list-style: none;
+            color: #555;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .warning-list li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        .footer-links {
+            text-align: center;
+            margin: 50px 0 100px 0;
+        }
+
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 30px;
+            font-size: 1.1rem;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .floating-cta {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+            padding: 18px 60px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.4);
+            animation: breathe 2s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .floating-cta:hover {
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-wrapper {
+                padding: 15px;
+            }
+            
+            .hero-section {
+                padding: 30px 25px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .info-card {
+                padding: 25px;
+            }
+            
+            .info-card:last-child .primary-image { 
+                height: auto;
+            }
+            
+            .floating-cta {
+                padding: 15px 20px;
+                font-size: 1rem;
+                white-space: nowrap;
+                max-width: 90vw;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <section class="hero-section">
+            <img src="img/1.png" alt="株式市場情報" class="primary-image">
+            <div class="participant-counter">現在参加人数：21979</div>
+            <h1 class="hero-title">私たちをLINE友達に追加して、即座に市場情報を取得</h1>
+            <p class="hero-description">今すぐあなたのLINEで取得</p>
+            <img src="img/2.png" alt="株式市場情報" class="primary-image">
+        </section>
+
+        <div class="content-grid">
+            <div class="info-card">
+                <h2 class="card-header">株式市場の動向を探り、より多くの市場情報を取得</h2>
+                <h3 class="card-subtitle">市場トレンドと最新動向を理解</h3>
+                <p class="card-content">
+                    公開データと市場分析に基づき、最近の取引量が多く、アナリストの注目度が高い株式リストを整理し、参考として提供いたします。
+                </p>
+                <button class="action-btn" onclick="k2()">下方をクリックして、詳細情報をご覧ください</button>
+                <p class="disclaimer-text">データは参考のみです。ご自身の状況に基づいて慎重に判断してください。</p>
+            </div>
+
+            <div class="info-card">
+                <h2 class="card-header">最近の市場パフォーマンス分析</h2>
+                <h3 class="card-subtitle">市場パフォーマンスと株式取引動向を把握</h3>
+                <p class="card-content">
+                    最近の公開市場データを提供し、アナリストの評価が高い株式とその公開取引トレンドを含め、市場情報をより良く理解できるよう支援します。
+                </p>
+                <button class="action-btn" onclick="k2()">市場分析リストを確認</button>
+                <p class="disclaimer-text">ご注意ください。すべての情報は参考のみであり、投資アドバイスを構成するものではありません。</p>
+            </div>
+
+            <div class="info-card">
+                <h2 class="card-header">人気取引株式ランキング</h2>
+                <h3 class="card-subtitle">最近の取引量が多い株式を理解</h3>
+                <p class="card-content">
+                    公開市場で取引量上位の株式情報を整理し、市場動向の参考として提供いたします。
+                </p>
+                <button class="action-btn" onclick="k2()">クリックしてランキング詳細をご覧ください</button>
+                <p class="disclaimer-text">データは公開情報に基づいて整理されており、投資推奨や助言ではありません。</p>
+                <img src="img/3.png" alt="取引ランキング" class="primary-image">
+            </div>
+        </div>
+
+        <section class="subscription-section">
+            <h2 class="subscription-title">株式市場情報を無料購読</h2>
+            <h3 class="subscription-subtitle">LINEサービスで最新市場動向をフォロー</h3>
+            <p class="subscription-description">
+                私たちをLINE友達に追加して、公開された市場情報と厳選された株式動向アラートを無料で取得し、いつでも市場変化を把握しましょう！
+            </p>
+            <button class="action-btn" onclick="k2()">今すぐLINE友達追加</button>
+        </section>
+
+        <div class="warning-section">
+            <h3 class="warning-title">🔹 重要リスク提示</h3>
+            <ul class="warning-list">
+                <li>• 市場にはリスクがあり、投資は慎重に行う必要があります。過去の実績は将来のパフォーマンスを示すものではありません。</li>
+                <li>• コース内容およびツールは参考のみであり、個別の投資アドバイスを構成するものではありません。</li>
+            </ul>
+        </div>
+
+        <div class="footer-links">
+            <a href="#" target="_blank">プライバシーポリシー</a>
+            <a href="#" target="_blank">利用規約</a>
+        </div>
+    </div>
+
+    <button class="floating-cta" onclick="k2()">LINE友達追加で市場情報取得</button>
+
+    <script>
+        function k2() {
+            // LINE跳转逻辑
+            console.log('LINE友達追加ボタンがクリックされました');
+        }
+
+        // 暗色模式支持
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+</body>
+</html>
